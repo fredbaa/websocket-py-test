@@ -5,18 +5,22 @@
 import asyncio
 import websockets
 
+loop = asyncio.get_event_loop()
+
 async def hello(websocket, path):
-    name = await websocket.recv()
-    print(f"input: {name}")
+    try:
+        name = await websocket.recv()
+        print(f"input: {name}")
 
-    greeting = f"Hello {name} from server!"
+        greeting = f"Hello {name} from server!"
 
-    await websocket.send(greeting)
-    print(f"> {greeting}")
+        await websocket.send(greeting)
+        print(f"> {greeting}")
+    except websockets.ConnectionClosed:
+        print("connection closed")
 
 start_server = websockets.serve(hello, 'localhost', 8765)
 
-loop = asyncio.get_event_loop()
 
 try:
     loop.run_until_complete(start_server)
